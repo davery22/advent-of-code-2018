@@ -1,12 +1,17 @@
 use std::collections::HashSet;
 
 pub fn run() {
+    println!("On the first day of Christmas, AoC gave to me...");
+
     let frequency_deltas = parse_input(include_str!("../input/day01.in"));
     println!("{}", get_final_frequency(0, &frequency_deltas));
     println!("{}", get_first_repeated_frequency(0, &frequency_deltas));
+
+    println!("The last and first-repeated frequencies!");
+    println!();
 }
 
-pub fn parse_input(raw_input: &str) -> Vec<i32> {
+fn parse_input(raw_input: &str) -> Vec<i32> {
     raw_input.lines()
         .map(|line| line.parse().unwrap())
         .collect()

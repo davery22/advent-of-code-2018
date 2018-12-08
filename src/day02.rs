@@ -1,9 +1,14 @@
 use std::collections::HashMap;
 
 pub fn run() {
+    println!("On the second day of Christmas, AoC gave to me...");
+
     let box_ids = include_str!("../input/day02.in").lines().collect();
     println!("{}", calculate_checksum(&box_ids));
-    println!("{}", get_letters_in_common(&box_ids));
+    println!("{}", get_letters_in_common(&box_ids).unwrap());
+
+    println!("A checksum and chars spliced from box IDs!");
+    println!();
 }
 
 pub fn calculate_checksum(box_ids: &Vec<&str>) -> i32 {
@@ -54,7 +59,7 @@ pub fn encode_char_frequency(input: &str) -> HashMap<char, u8> {
 //    helper(HashMap::new(), input.chars())
 }
 
-pub fn get_letters_in_common(box_ids: &Vec<&str>) -> String {
+pub fn get_letters_in_common(box_ids: &Vec<&str>) -> Result<String, ()> {
     for (i, this_box_id) in box_ids.iter().enumerate() {
         for that_box_id in box_ids.iter().skip(i) {
             let matching_chars: String = this_box_id.chars()
@@ -64,12 +69,12 @@ pub fn get_letters_in_common(box_ids: &Vec<&str>) -> String {
                 .collect();
 
             if matching_chars.len() == this_box_id.len() - 1 {
-                return matching_chars;
+                return Ok(matching_chars);
             }
         }
     }
 
-    return "".to_string();
+    return Err(());
 }
 
 #[cfg(test)]
@@ -90,5 +95,29 @@ mod tests {
         encoding.insert('d', 3);
 
         assert_eq!(encoding, encode_char_frequency("abcbdcdd"));
+    }
+
+    #[test]
+    fn test_calculates_checksum() {
+        let box_ids = vec!["abcdef", "bababc", "abbcde", "abcccd", "aabcdd", "abcdee", "ababab"];
+        assert_eq!(12, calculate_checksum(&box_ids));
+    }
+
+    #[test]
+    fn test_gets_letters_in_common_1() {
+        let box_ids = vec!["abcdef", "bababc", "abbcde", "abcccd", "aabcdd", "abcdee", "ababab"];
+        assert_eq!(Ok("abcde".to_string()), get_letters_in_common(&box_ids));
+    }
+
+    #[test]
+    fn test_gets_letters_in_common_2() {
+        let box_ids = vec!["abcde", "fghij", "klmno", "pqrst", "fguij", "axcye", "wvxyz"];
+        assert_eq!(Ok("fgij".to_string()), get_letters_in_common(&box_ids));
+    }
+
+    #[test]
+    fn test_errors_on_getting_letters_in_common_when_none_match() {
+        let box_ids = vec!["abcde", "fghij", "klmno", "pqrst", "fguik", "axcye", "wvxyz"];
+        assert_eq!(Err(()), get_letters_in_common(&box_ids));
     }
 }
